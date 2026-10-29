@@ -1,0 +1,30 @@
+name: Build iOS IPA
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+      runs-on: macos-14
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+
+        - name: Set up Rust
+          uses: dtolnay/rust-toolchain@master
+          with:
+            toolchain: 1.98.1
+            targets: aarch64-apple-ios
+
+        - name: Install dependencies
+          run: brew install xcodegen
+
+        - name: Run iOS Build
+          run: |
+            ./make-ios.sh game.zip --ipa
+            
+        - name: Upload IPA Artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: Muguet-iOS-IPA
+            path: build/*.ipa
